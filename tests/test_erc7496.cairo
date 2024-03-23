@@ -1,20 +1,13 @@
 use starknet::ContractAddress;
 use starknet::contract_address_const;
 use snforge_std::{
-    declare,
-    ContractClassTrait,
-    start_prank,
-    CheatTarget,
-    spy_events,
-    SpyOn,
-    EventSpy,
+    declare, ContractClassTrait, start_prank, CheatTarget, spy_events, SpyOn, EventSpy,
     EventAssertions
 };
 use openzeppelin::utils::serde::SerializedAppend;
 use cairo_erc_7496::erc7496::interface::IERC7496_ID;
 use cairo_erc_7496::presets::erc721_dynamic_traits::{
-    ERC721DynamicTraits,
-    IERC721DynamicTraitsMixinDispatcherTrait,
+    ERC721DynamicTraits, IERC721DynamicTraitsMixinDispatcherTrait,
     IERC721DynamicTraitsMixinDispatcher
 };
 
@@ -68,18 +61,19 @@ fn test_returns_value_set() {
     let token_id = 12345;
     token.mint(RECIPIENT(), token_id);
     token.set_trait(token_id, key, value);
-    spy.assert_emitted(@array![
-        (
-            contract_address,
-            ERC721DynamicTraits::ERC7496Component::Event::TraitUpdated(
-                ERC721DynamicTraits::ERC7496Component::TraitUpdated {
-                    trait_key: key,
-                    token_id,
-                    trait_value: value
-                }
-            )
-        )
-    ]);
+    spy
+        .assert_emitted(
+            @array![
+                (
+                    contract_address,
+                    ERC721DynamicTraits::ERC7496Component::Event::TraitUpdated(
+                        ERC721DynamicTraits::ERC7496Component::TraitUpdated {
+                            trait_key: key, token_id, trait_value: value
+                        }
+                    )
+                )
+            ]
+        );
     assert_eq!(token.get_trait_value(token_id, key), value);
 }
 
@@ -125,14 +119,17 @@ fn test_get_and_set_trait_metadata_uri() {
     let (token, contract_address) = setup();
     let mut spy = spy_events(SpyOn::One(contract_address));
     token.set_trait_metadata_uri(METADATA_URI());
-    spy.assert_emitted(@array![
-        (
-            contract_address,
-            ERC721DynamicTraits::ERC7496Component::Event::TraitMetadataURIUpdated(
-                ERC721DynamicTraits::ERC7496Component::TraitMetadataURIUpdated {}
-            )
-        )
-    ]);
+    spy
+        .assert_emitted(
+            @array![
+                (
+                    contract_address,
+                    ERC721DynamicTraits::ERC7496Component::Event::TraitMetadataURIUpdated(
+                        ERC721DynamicTraits::ERC7496Component::TraitMetadataURIUpdated {}
+                    )
+                )
+            ]
+        );
     assert_eq!(token.get_trait_metadata_uri(), METADATA_URI());
     start_prank(CheatTarget::One(contract_address), OTHER());
     token.set_trait_metadata_uri(METADATA_URI());

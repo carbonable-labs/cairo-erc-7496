@@ -104,10 +104,8 @@ mod ERC721DynamicTraits {
 
     /// Sets the token `name`, `symbol` and `base_uri`.
     #[constructor]
-    fn constructor(ref self: ContractState,
-    name: ByteArray,
-    symbol: ByteArray,
-    base_uri: ByteArray,
+    fn constructor(
+        ref self: ContractState, name: ByteArray, symbol: ByteArray, base_uri: ByteArray,
     ) {
         self.ownable.initializer(get_caller_address());
         self.erc721.initializer(name, symbol, base_uri);
@@ -125,12 +123,16 @@ mod ERC721DynamicTraits {
             self.erc7496._get_trait_value(token_id, trait_key)
         }
 
-        fn get_trait_values(self: @ContractState, token_id: u256, trait_keys: Span<felt252>) -> Span<felt252> {
+        fn get_trait_values(
+            self: @ContractState, token_id: u256, trait_keys: Span<felt252>
+        ) -> Span<felt252> {
             assert(self.erc721._exists(token_id), ERC721Component::Errors::INVALID_TOKEN_ID);
             self.erc7496._get_trait_values(token_id, trait_keys)
         }
 
-        fn set_trait(ref self: ContractState, token_id: u256, trait_key: felt252, new_value: felt252) {
+        fn set_trait(
+            ref self: ContractState, token_id: u256, trait_key: felt252, new_value: felt252
+        ) {
             self.ownable.assert_only_owner();
             assert(self.erc721._exists(token_id), ERC721Component::Errors::INVALID_TOKEN_ID);
             self.erc7496._set_trait(token_id, trait_key, new_value);
