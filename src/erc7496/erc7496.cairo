@@ -31,7 +31,7 @@ mod ERC7496Component {
     /// Emitted when a dynamic trait is updated.
     #[derive(Drop, PartialEq, starknet::Event)]
     struct TraitUpdated {
-        // #[key]
+        #[key]
         trait_key: felt252,
         token_id: u256,
         trait_value: felt252
