@@ -1,0 +1,6 @@
+# Starknet
+target
+Scarb.lock
+
+# Starknet foundry
+.snfoundry_cache
