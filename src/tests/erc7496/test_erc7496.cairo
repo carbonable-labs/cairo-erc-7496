@@ -154,6 +154,7 @@ fn test_get_trait_value_nonexistent_token() {
     let (token, _contract_address) = deploy();
     let key = 'testKey';
     let token_id = 1;
+    // get_trait_value
     token.get_trait_value(token_id, key);
 }
 
