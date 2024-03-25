@@ -67,7 +67,7 @@ mod ERC721DynamicTraits {
     impl OwnableImpl = OwnableComponent::OwnableImpl<ContractState>;
     impl OwnableInternalImpl = OwnableComponent::InternalImpl<ContractState>;
 
-    // ERC721Mixin
+    // ERC721
     #[abi(embed_v0)]
     impl ERC721Impl = ERC721Component::ERC721Impl<ContractState>;
     impl ERC721InternalImpl = ERC721Component::InternalImpl<ContractState>;
@@ -115,6 +115,7 @@ mod ERC721DynamicTraits {
     #[abi(embed_v0)]
     impl ERC721DynamicTraitsImpl of super::IERC721DynamicTraits<ContractState> {
         fn mint(ref self: ContractState, to: ContractAddress, token_id: u256) {
+            self.ownable.assert_only_owner();
             self.erc721._mint(to, token_id);
         }
 
