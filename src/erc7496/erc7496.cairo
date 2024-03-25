@@ -7,11 +7,10 @@
 // - Expose a function for `setTraitMetadataURI` with access role restriction if desired.
 #[starknet::component]
 mod ERC7496Component {
-    use openzeppelin::introspection::interface::{ISRC5Dispatcher, ISRC5DispatcherTrait};
     use openzeppelin::introspection::src5::SRC5Component::InternalTrait as SRC5InternalTrait;
     use openzeppelin::introspection::src5::SRC5Component::SRC5;
     use openzeppelin::introspection::src5::SRC5Component;
-    use cairo_erc_7496::erc7496::interface;
+    use cairo_erc_7496::erc7496::interface::{IERC7496_ID, IERC7496};
 
     #[storage]
     struct Storage {
@@ -55,7 +54,7 @@ mod ERC7496Component {
         +HasComponent<TContractState>,
         +SRC5Component::HasComponent<TContractState>,
         +Drop<TContractState>
-    > of interface::IERC7496<ComponentState<TContractState>> {
+    > of IERC7496<ComponentState<TContractState>> {
         // @notice Get the URI for the trait metadata
         fn get_trait_metadata_uri(self: @ComponentState<TContractState>) -> ByteArray {
             // Return the trait metadata URI.
@@ -78,7 +77,7 @@ mod ERC7496Component {
         /// This should only be used inside the contract's constructor.
         fn initializer(ref self: ComponentState<TContractState>) {
             let mut src5_component = get_dep_component_mut!(ref self, SRC5);
-            src5_component.register_interface(interface::IERC7496_ID);
+            src5_component.register_interface(IERC7496_ID);
         }
 
         // @notice Get the value of a trait for a given token ID.
