@@ -17,7 +17,7 @@ A Cairo implementation of [EIP-7496](https://eips.ethereum.org/EIPS/eip-7496) ba
 
 > ## ⚠️ WARNING! ⚠️
 >
-> This is repo contains highly experimental code.
+> This repo contains highly experimental code.
 > Expect rapid iteration.
 > **Use at your own risk.**
 
@@ -47,4 +47,4 @@ scarb test
 
 ## 📄 License
 
-This project is released under the MIT license.
+This project is released under the Apache license.
