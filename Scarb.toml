@@ -1,12 +1,18 @@
 [package]
 name = "cairo_erc_7496"
-version = "2.0.0"
-
-[lib]
+version = "0.1.0"
+edition = "2023_11"
+cairo-version = "2.6.3"
+description = "Dynamic Traits Contracts written in Cairo for Starknet."
+documentation = "https://github.com/carbonable-labs/cairo-erc-7496"
+readme = "README.md"
+repository = "https://github.com/carbonable-labs/cairo-erc-7496"
 
 [dependencies]
-starknet = ">=2.2.0"
-openzeppelin = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v0.10.0" }
+starknet = "2.6.3"
+openzeppelin = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v0.11.0" }
+
+[lib]
 
 [dev-dependencies]
 snforge_std = { git = "https://github.com/foundry-rs/starknet-foundry.git", tag = "v0.20.1" }

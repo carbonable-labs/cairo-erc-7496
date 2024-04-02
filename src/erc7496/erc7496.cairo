@@ -6,9 +6,8 @@
 // - Overwrite `setTrait` with access role restriction.
 // - Expose a function for `setTraitMetadataURI` with access role restriction if desired.
 #[starknet::component]
-mod ERC7496Component {
+pub mod ERC7496Component {
     use openzeppelin::introspection::src5::SRC5Component::InternalTrait as SRC5InternalTrait;
-    use openzeppelin::introspection::src5::SRC5Component::SRC5;
     use openzeppelin::introspection::src5::SRC5Component;
     use cairo_erc_7496::erc7496::interface::{IERC7496_ID, IERC7496};
 
@@ -17,31 +16,67 @@ mod ERC7496Component {
         /// @dev A mapping of token ID to a mapping of trait key to trait value.
         ERC7496_traits: LegacyMap<(u256, felt252), felt252>,
         /// @dev An offchain string URI that points to a JSON file containing trait metadata.
-        ERC7498_trait_metadata_uri: ByteArray,
+        ERC7496_trait_metadata_uri: ByteArray,
     }
 
     #[event]
     #[derive(Drop, PartialEq, starknet::Event)]
-    enum Event {
+    pub enum Event {
         TraitUpdated: TraitUpdated,
+        TraitUpdatedRange: TraitUpdatedRange,
+        TraitUpdatedRangeUniformValue: TraitUpdatedRangeUniformValue,
+        TraitUpdatedList: TraitUpdatedList,
+        TraitUpdatedListUniformValue: TraitUpdatedListUniformValue,
         TraitMetadataURIUpdated: TraitMetadataURIUpdated
     }
 
     /// Emitted when a dynamic trait is updated.
     #[derive(Drop, PartialEq, starknet::Event)]
-    struct TraitUpdated {
+    pub struct TraitUpdated {
         #[key]
-        trait_key: felt252,
-        token_id: u256,
-        trait_value: felt252
+        pub trait_key: felt252,
+        pub token_id: u256,
+        pub trait_value: felt252
+    }
+
+    #[derive(Drop, PartialEq, starknet::Event)]
+    pub struct TraitUpdatedRange {
+        #[key]
+        pub trait_key: felt252,
+        pub from_token_id: u256,
+        pub to_token_id: u256
+    }
+
+    #[derive(Drop, PartialEq, starknet::Event)]
+    pub struct TraitUpdatedRangeUniformValue {
+        #[key]
+        pub trait_key: felt252,
+        pub from_token_id: u256,
+        pub to_token_id: u256,
+        pub trait_value: felt252
+    }
+
+    #[derive(Drop, PartialEq, starknet::Event)]
+    pub struct TraitUpdatedList {
+        #[key]
+        pub trait_key: felt252,
+        pub token_ids: Span<u256>
+    }
+
+    #[derive(Drop, PartialEq, starknet::Event)]
+    pub struct TraitUpdatedListUniformValue {
+        #[key]
+        pub trait_key: felt252,
+        pub token_ids: Span<u256>,
+        pub trait_value: felt252
     }
 
     /// Emitted when metadata uri is updated.
     #[derive(Drop, PartialEq, starknet::Event)]
-    struct TraitMetadataURIUpdated {}
+    pub struct TraitMetadataURIUpdated {}
 
-    mod Errors {
-        const TRAIT_VALUE_UNCHANGED: felt252 = 'ERC7496: trait value unchanged';
+    pub mod Errors {
+        pub const TRAIT_VALUE_UNCHANGED: felt252 = 'ERC7496: trait value unchanged';
     }
 
     //
@@ -55,35 +90,10 @@ mod ERC7496Component {
         +SRC5Component::HasComponent<TContractState>,
         +Drop<TContractState>
     > of IERC7496<ComponentState<TContractState>> {
-        // @notice Get the URI for the trait metadata
-        fn get_trait_metadata_uri(self: @ComponentState<TContractState>) -> ByteArray {
-            // Return the trait metadata URI.
-            self.ERC7498_trait_metadata_uri.read()
-        }
-    }
-
-    //
-    // Internal
-    //
-
-    #[generate_trait]
-    impl InternalImpl<
-        TContractState,
-        +HasComponent<TContractState>,
-        impl SRC5: SRC5Component::HasComponent<TContractState>,
-        +Drop<TContractState>
-    > of InternalTrait<TContractState> {
-        /// Initializes the contract
-        /// This should only be used inside the contract's constructor.
-        fn initializer(ref self: ComponentState<TContractState>) {
-            let mut src5_component = get_dep_component_mut!(ref self, SRC5);
-            src5_component.register_interface(IERC7496_ID);
-        }
-
         // @notice Get the value of a trait for a given token ID.
         // @param tokenId The token ID to get the trait value for
         // @param traitKey The trait key to get the value of
-        fn _get_trait_value(
+        fn get_trait_value(
             self: @ComponentState<TContractState>, token_id: u256, trait_key: felt252
         ) -> felt252 {
             // Return the trait value.
@@ -93,7 +103,7 @@ mod ERC7496Component {
         // @notice Get the values of traits for a given token ID.
         // @param tokenId The token ID to get the trait values for
         // @param traitKeys The trait keys to get the values of
-        fn _get_trait_values(
+        fn get_trait_values(
             self: @ComponentState<TContractState>, token_id: u256, trait_keys: Span<felt252>
         ) -> Span<felt252> {
             let mut trait_values = array![];
@@ -108,9 +118,32 @@ mod ERC7496Component {
             trait_values.span()
         }
 
-        // @notice Set the value of a trait for a given token ID.
-        //         Reverts if the trait value is unchanged.
-        // @dev    IMPORTANT: Override this method with access role restriction.
+        // @notice Get the URI for the trait metadata
+        fn get_trait_metadata_uri(self: @ComponentState<TContractState>) -> ByteArray {
+            // Return the trait metadata URI.
+            self.ERC7496_trait_metadata_uri.read()
+        }
+    }
+
+    //
+    // Internal
+    //
+
+    #[generate_trait]
+    pub impl InternalImpl<
+        TContractState,
+        +HasComponent<TContractState>,
+        impl SRC5: SRC5Component::HasComponent<TContractState>,
+        +Drop<TContractState>
+    > of InternalTrait<TContractState> {
+        /// Initializes the contract
+        /// This should only be used inside the contract's constructor.
+        fn initializer(ref self: ComponentState<TContractState>) {
+            let mut src5_component = get_dep_component_mut!(ref self, SRC5);
+            src5_component.register_interface(IERC7496_ID);
+        }
+
+        // @notice Set the trait value (without emitting an event).
         // @param tokenId The token ID to set the trait value for
         // @param traitKey The trait key to set the value of
         // @param newValue The new trait value to set
@@ -124,22 +157,6 @@ mod ERC7496Component {
             let existing_value = self.ERC7496_traits.read((token_id, trait_key));
             assert(existing_value != new_value, Errors::TRAIT_VALUE_UNCHANGED);
             // Set the new trait value.
-            self._set_trait_internal(token_id, trait_key, new_value);
-            // Emit the event noting the update.
-            self.emit(TraitUpdated { trait_key, token_id, trait_value: new_value });
-        }
-
-        // @notice Set the trait value (without emitting an event).
-        // @param tokenId The token ID to set the trait value for
-        // @param traitKey The trait key to set the value of
-        // @param newValue The new trait value to set
-        fn _set_trait_internal(
-            ref self: ComponentState<TContractState>,
-            token_id: u256,
-            trait_key: felt252,
-            new_value: felt252
-        ) {
-            // Set the new trait value.
             self.ERC7496_traits.write((token_id, trait_key), new_value);
         }
 
@@ -147,7 +164,7 @@ mod ERC7496Component {
         // @param uri The new URI to set.
         fn _set_trait_metadata_uri(ref self: ComponentState<TContractState>, uri: ByteArray) {
             // Set the new trait metadata URI.
-            self.ERC7498_trait_metadata_uri.write(uri);
+            self.ERC7496_trait_metadata_uri.write(uri);
             // Emit the event noting the update.
             self.emit(TraitMetadataURIUpdated {});
         }

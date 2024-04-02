@@ -1,9 +1,8 @@
-mod erc7496 {
-    mod interface;
-    mod erc7496;
+pub mod erc7496 {
+    pub mod interface;
+    pub mod erc7496;
 }
 
-mod presets {
-    mod erc721_dynamic_traits;
+pub mod presets {
+    pub mod erc721_dynamic_traits;
 }
-
