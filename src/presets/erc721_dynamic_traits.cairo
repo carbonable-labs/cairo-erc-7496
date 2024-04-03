@@ -1,7 +1,7 @@
 use starknet::ContractAddress;
 
 #[starknet::interface]
-trait IERC721DynamicTraits<TState> {
+pub trait IERC721DynamicTraits<TState> {
     fn safe_get_trait_value(self: @TState, token_id: u256, trait_key: felt252) -> felt252;
     fn safe_get_trait_values(
         self: @TState, token_id: u256, trait_keys: Span<felt252>
