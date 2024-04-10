@@ -1,0 +1,14 @@
+name: Build
+on:
+  push:
+  pull_request:
+jobs:
+  build-starknet-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: software-mansion/setup-scarb@v1
+        with:
+          tool-versions: .tool-versions
+      - run: scarb fmt --check
+      - run: scarb build

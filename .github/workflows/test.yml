@@ -1,0 +1,16 @@
+name: Test
+on:
+  push:
+  pull_request:
+jobs:
+  test-starknet-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: software-mansion/setup-scarb@v1
+        with:
+          tool-versions: .tool-versions
+      - uses: foundry-rs/setup-snfoundry@v3
+        with:
+          tool-versions: .tool-versions
+      - run: scarb test
