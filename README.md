@@ -1,5 +1,5 @@
 <div align="center">
-  <h1 align="center">ERC-7496 Dynamic Traits</h1>
+  <h1 align="center">Cairo ERC-7496 Dynamic Traits</h1>
   <p align="center">
     <a href="https://discord.gg/qqkBpmRDFE">
         <img src="https://img.shields.io/badge/Discord-6666FF?style=for-the-badge&logo=discord&logoColor=white">
