@@ -1,3 +1,4 @@
 #[cfg(test)]
 #[feature("safe_dispatcher")]
-mod test_erc7496;
+mod erc721_dynamic_traits;
+mod utils;
