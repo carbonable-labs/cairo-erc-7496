@@ -1,6 +1,6 @@
 use core::panic_with_felt252;
 use snforge_std::{
-    test_address, start_prank, CheatTarget, spy_events, SpyOn, EventSpy, EventAssertions
+    test_address, cheat_caller_address, CheatSpan, spy_events, SpyOn, EventSpy, EventAssertions
 };
 use openzeppelin::tests::utils::constants::{TOKEN_ID, TOKEN_ID_2, OTHER, BASE_URI_2};
 use openzeppelin::access::ownable::OwnableComponent;
@@ -48,7 +48,7 @@ fn test_returns_value_set() {
 #[test]
 fn test_only_owner_can_set_values() {
     let dynamic_traits_test = DynamicTraitsTestTrait::setup();
-    start_prank(CheatTarget::One(dynamic_traits_test.contract_address), OTHER());
+    cheat_caller_address(dynamic_traits_test.contract_address, OTHER(), CheatSpan::TargetCalls(1));
     match dynamic_traits_test.token_safe.set_trait(0, 'test', 'test') {
         Result::Ok(_) => panic_with_felt252('FAIL'),
         Result::Err(panic_data) => {
@@ -100,7 +100,7 @@ fn test_get_and_set_trait_metadata_uri() {
             ]
         );
     assert_eq!(dynamic_traits_test.token.get_trait_metadata_uri(), BASE_URI_2());
-    start_prank(CheatTarget::One(dynamic_traits_test.contract_address), OTHER());
+    cheat_caller_address(dynamic_traits_test.contract_address, OTHER(), CheatSpan::TargetCalls(1));
     match dynamic_traits_test.token_safe.set_trait_metadata_uri(BASE_URI_2()) {
         Result::Ok(_) => panic_with_felt252('FAIL'),
         Result::Err(panic_data) => {
